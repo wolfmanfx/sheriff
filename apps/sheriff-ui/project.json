@@ -1,0 +1,93 @@
+{
+  "name": "sheriff-ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/sheriff-ui/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/sheriff-ui",
+        "browser": "apps/sheriff-ui/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/sheriff-ui/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/sheriff-ui/public"
+          }
+        ],
+        "styles": ["apps/sheriff-ui/src/styles.css"]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "sheriff-ui:build:production"
+        },
+        "development": {
+          "buildTarget": "sheriff-ui:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "dependsOn": ["sheriff-api:serve"],
+      "options": {
+        "proxyConfig": "apps/sheriff-ui/proxy.conf.json"
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "sheriff-ui:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/sheriff-ui/jest.config.ts",
+        "tsConfig": "apps/sheriff-ui/tsconfig.spec.json"
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "sheriff-ui:build",
+        "staticFilePath": "dist/apps/sheriff-ui/browser",
+        "spa": true
+      }
+    }
+  }
+}
