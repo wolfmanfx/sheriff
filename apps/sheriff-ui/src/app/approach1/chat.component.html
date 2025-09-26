@@ -1,0 +1,79 @@
+<app-chat-interface
+  [userInput]="userInput"
+  [isStreaming]="isStreaming()"
+  [showPreviewPanel]="appStore.showAssetView()"
+  [mergedTree]="mergedTree()"
+  [inputPlaceholder]="'Type your message...'"
+  (sendMessage)="onSendMessage($event)"
+  (saveRequested)="saveConfig()"
+  (initDefaultRequested)="initDefaultConfig()"
+  (previewOrgChartRequested)="previewOrgChart()"
+  (closeRequested)="closeCanvas()">
+  @if (messages().length === 0) {
+    <app-chat-empty-state
+      [title]="'Sheriff Configuration Assistant - Structured Single Prompt Approach'"
+      [description]="'Get started by selecting a test project or providing your own project details:'"
+      [examples]="emptyStateExamples"
+      (onExampleClick)="useExamplePrompt($event)"
+    />
+  } @else {
+    @for (message of messages(); track message.id) {
+    <div class="w-full flex" [class.justify-end]="message.role === 'user'" [class.justify-start]="message.role === 'assistant'">
+      <div class="w-full md:w-[60%] flex flex-col gap-3" [class.items-end]="message.role === 'user'" [class.items-start]="message.role === 'assistant'">
+        <div class="w-full flex" [class.justify-end]="message.role === 'user'" [class.justify-start]="message.role === 'assistant'">
+          @if (message.role === 'assistant') {
+            <div class="w-full flex flex-col gap-4 py-5 px-5 rounded-xl border border-slate-400/35 shadow-xl bg-linear-to-br from-slate-50/95 to-indigo-50/90 border-indigo-300/28">
+              @if (message.parts && message.parts.length > 0) {
+                @for (part of message.parts; track $index) {
+                  @switch (part.type) {
+                    @case ('text') {
+                      <div class="leading-relaxed text-slate-800 text-sm">
+                        <app-markdown-viewer [content]="part.text" />
+                        @if (part.state === 'streaming') {
+                          <span class="typing-cursor">&#9646;</span>
+                        }
+                      </div>
+                    }
+                    @case ('reasoning') {
+                      <details>
+                        <summary>Reasoning</summary>
+                        <div style="white-space: pre-wrap; font-size: 90%; opacity: 80%">
+                          <div>{{ part.text }}</div>
+                        </div>
+                      </details>
+                    }
+                    @default {
+                      <pre class="m-0 p-3 rounded-lg bg-slate-900/5 border border-slate-400/20 text-xs font-mono overflow-x-auto">{{ part | json }}</pre>
+                    }
+                  }
+                }
+              } @else {
+                <div class="text-slate-600 text-sm italic">No content</div>
+              }
+            </div>
+          } @else {
+            <div class="w-full flex flex-col gap-4 py-5 px-5 rounded-xl border-0 shadow-xl bg-linear-to-r from-blue-600 to-sky-500 text-slate-50">
+              @if (message.parts && message.parts.length > 0) {
+                @for (part of message.parts; track $index) {
+                  @if (part.type === 'text') {
+                    <div style="white-space: pre-wrap" class="leading-relaxed text-slate-50 text-sm">
+                      {{ part.text }}
+                    </div>
+                  }
+                }
+              } @else {
+                <div class="text-slate-50 text-sm italic">No content</div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  }
+
+  @if (isStreaming()) {
+    <app-streaming-indicator />
+  }
+</app-chat-interface>
+

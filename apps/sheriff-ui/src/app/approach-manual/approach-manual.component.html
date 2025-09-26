@@ -1,0 +1,111 @@
+<div class="w-full h-full px-4 py-4 flex flex-col gap-3 min-h-0">
+  <div class="card bg-base-100 border border-base-300">
+    <div class="card-body p-3 gap-2">
+      <div class="flex flex-wrap gap-2 items-center">
+        <label class="input input-bordered input-sm flex items-center gap-2 flex-1 min-w-[280px]">
+          <span class="text-xs text-base-content/60">Root</span>
+          <input
+            data-testid="manual-root"
+            class="grow"
+            placeholder="/path/to/project"
+            [value]="manual.cwd()"
+            (input)="manual.setCwd($any($event.target).value || '')"
+          />
+        </label>
+        <label class="input input-bordered input-sm flex items-center gap-2 flex-1 min-w-[220px]">
+          <span class="text-xs text-base-content/60">Entry</span>
+          <input
+            data-testid="manual-entry"
+            class="grow"
+            placeholder="src/main.ts"
+            [value]="manual.entry()"
+            (input)="manual.setEntry($any($event.target).value || '')"
+          />
+        </label>
+        <button data-testid="manual-activate" class="btn btn-sm" (click)="activate()">Activate</button>
+        @if (manual.missingConfig()) {
+          <span class="badge badge-error badge-sm">No sheriff.config.ts</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-2 items-center justify-between">
+    <div class="flex items-center gap-2">
+      <h2 class="text-sm font-semibold text-base-content/80">Manual Config Builder</h2>
+      @if (!manual.previewTree()) {
+        <span class="badge badge-warning badge-sm">Run "Infer from Code"</span>
+      }
+    </div>
+    <div class="flex flex-wrap gap-2 items-center">
+      <button data-testid="manual-infer" class="btn btn-sm" (click)="manual.applyPreview()">Infer from Code</button>
+      <button data-testid="manual-save" class="btn btn-sm btn-primary" [disabled]="!manual.draft().trim()" (click)="manual.saveDraftToDisk()">
+        Save
+      </button>
+      <button data-testid="manual-init-default" class="btn btn-sm" (click)="manual.initDefault()">Init Default</button>
+    </div>
+  </div>
+
+  <div class="flex gap-3 min-h-0 flex-1 overflow-hidden">
+    <!-- Tags Panel -->
+    <app-tags-panel
+      [tags]="manual.allTags()"
+      [tagUsageCounts]="tagUsageCount()"
+      [collapsed]="tagsCollapsed()"
+      [selectedNode]="manual.selectedNode()"
+      (tagDragStart)="onTagDragStart($event)"
+      (tagDragEnd)="onTagDragEnd()"
+      (toggleCollapsed)="toggleTagsCollapsed()"
+      (openNewTagModal)="onOpenNewTagModal()"
+    />
+
+    <!-- Middle Section - Selected, Chart, Matrix -->
+    <div class="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
+      <!-- Selected Node Panel -->
+      <app-selected-node-panel
+        [node]="manual.selectedNode()"
+        [allTags]="manual.allTags()"
+        [collapsed]="selectedCollapsed()"
+        (toggleCollapsed)="toggleSelectedCollapsed()"
+        (addTag)="onSelectedAddTag($event)"
+        (removeTag)="onSelectedRemoveTag($event)"
+      />
+
+      <!-- Module Chart Panel -->
+      <app-module-chart-panel
+        [tree]="manual.graphTree()"
+        [targetModules]="computedTargetModules()"
+        [draggingTag]="manual.draggingTag()"
+        [collapsed]="chartCollapsed()"
+        [matrixCollapsed]="matrixCollapsed()"
+        (toggleCollapsed)="toggleChartCollapsed()"
+        (fit)="onFitChart()"
+        (refresh)="onRefreshChart()"
+        (selectionChange)="onGraphSelectionChange($event)"
+        (tagRemove)="onTagRemove($event)"
+        (tagDropped)="onTagDropped($event)"
+      />
+
+      <!-- Dependency Matrix Panel -->
+      <app-dependency-matrix-panel
+        [tags]="manual.allTags()"
+        [depRulesRaw]="manual.depRulesRaw()"
+        [collapsed]="matrixCollapsed()"
+        (toggleCollapsed)="toggleMatrixCollapsed()"
+        (toggleDepRule)="onToggleDepRule($event)"
+      />
+    </div>
+
+    <!-- Code Preview Panel -->
+    <app-code-preview-panel
+      [draft]="manual.draft()"
+      [validating]="manual.validating()"
+      [previewValid]="manual.previewValid()"
+      [previewErrors]="manual.previewErrors()"
+      [draftDirty]="manual.draftDirty()"
+      [collapsed]="codePreviewCollapsed()"
+      (toggleCollapsed)="toggleCodePreviewCollapsed()"
+      (draftChange)="onDraftChange($event)"
+    />
+  </div>
+</div>

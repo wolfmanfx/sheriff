@@ -1,5 +1,11 @@
 set -e
 
+# Ensure the yalc store contains the built packages (CLI binary included)
+echo "Building and publishing packages to yalc..."
+yarn build:all
+yalc publish dist/packages/core
+yalc publish dist/packages/eslint-plugin
+
 # We copy the test projects to a temporary directory to avoid any potential
 # issues with the dependencies from the root project.
 

@@ -47,7 +47,6 @@ describe('log', () => {
   });
 
   it('should not log if disabled', () => {
-    const appendSpy = vitest.spyOn(fs, 'appendFile');
     const log = logger('test');
     log.info('message');
     setup(false);

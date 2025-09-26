@@ -6,3 +6,8 @@ export { noDependencies } from './lib/checks/no-dependencies';
 export { UserSheriffConfig as SheriffConfig } from './lib/config/user-sheriff-config';
 export { UserError } from './lib/error/user-error';
 export { getProjectData, ProjectData } from './lib/api/get-project-data';
+// TODO discuss how to get the allowed matrix per module
+export { init } from './lib/main/init';
+export { calcTagsForModule } from './lib/tags/calc-tags-for-module';
+export { isDependencyAllowed } from './lib/checks/is-dependency-allowed';
+export { toFsPath, type FsPath } from './lib/file-info/fs-path';

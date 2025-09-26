@@ -8,7 +8,7 @@ export default defineConfig({
       reporter: ['text', 'html', 'lcov'],
       include: ['packages/*/src/lib/**/*.ts'],
     },
-    include: ['packages/**/*.spec.ts'],
+    include: ['packages/**/*.spec.ts', 'apps/**/*.spec.ts'],
     setupFiles: ['packages/core/src/lib/test/expect.extensions.ts'],
     alias: {
       '@softarc/eslint-plugin-sheriff': resolve(

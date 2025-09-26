@@ -1,0 +1,42 @@
+# Source files - only bundled output needed
+src/**
+tsconfig.json
+tsconfig.*.json
+*.ts
+
+# Development files
+.eslintrc*
+.prettierrc*
+jest.config.*
+vitest.config.*
+*.spec.ts
+*.test.ts
+
+# Build artifacts
+*.map
+*.tsbuildinfo
+
+# Nx/project files
+project.json
+.gitignore
+
+# Test files
+**/__tests__/**
+**/*.spec.*
+**/*.test.*
+
+# Documentation
+*.md
+!README.md
+
+# Media source files (we copy compiled UI)
+media/ui/**/*.map
+
+# Include the bundled core package (needed by server)
+!node_modules/@softarc/sheriff-core/**
+
+# Include only the core package we need
+node_modules/**
+!node_modules/@softarc/**
+node_modules/@softarc/**
+!node_modules/@softarc/sheriff-core/**

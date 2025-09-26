@@ -1,0 +1,129 @@
+<app-chat-interface
+  [userInput]="userInput"
+  [isStreaming]="agentStore.isStreaming()"
+  [showPreviewPanel]="appStore.showAssetView()"
+  [mergedTree]="mergedTree()"
+  (sendMessage)="forwardTextToAgent($event)"
+  (saveRequested)="saveConfig()"
+  (initDefaultRequested)="initDefaultConfig()"
+  (previewOrgChartRequested)="previewOrgChart()"
+  (closeRequested)="closeCanvas()">
+  @if (agentStore.messages().length === 0) {
+    <app-chat-empty-state
+      [title]="'Sheriff Assistant - Agentic AI with Tool Calls'"
+      [description]="'Get started by asking about your project architecture or try one of these examples:'"
+      [examples]="emptyStateExamples"
+      (onExampleClick)="useExamplePrompt($event)"
+    />
+  } @else {
+    @for (message of agentStore.messages(); track message.id ?? messageIndex; let messageIndex = $index) {
+      @let hasStructured = hasStructuredParts(message);
+      <div class="w-full flex" [class.justify-end]="message.role === 'user'" [class.justify-start]="message.role === 'assistant'">
+        <div class="w-full md:w-[60%] flex flex-col gap-3" [class.items-end]="message.role === 'user'" [class.items-start]="message.role === 'assistant'">
+          <app-message-header [role]="message.role" [agentRole]="getAgentRoleFromMessage(message)" />
+
+          <div class="w-full flex" [class.justify-end]="message.role === 'user'" [class.justify-start]="message.role === 'assistant'">
+            @if (message.role === 'assistant') {
+              <div class="w-full flex flex-col gap-4 py-5 px-5 rounded-xl border border-slate-400/35 shadow-xl bg-linear-to-br from-slate-50/95 to-indigo-50/90 border-indigo-300/28">
+                @let annotations = getMessageAnnotations(message);
+
+                @for (part of message.parts; track partIndex; let partIndex = $index) {
+                  @let structured = parseUiStateResponse(part);
+                  @if (structured) {
+                    @switch (structured.kind) {
+                      @case ('confirmation') {
+                        <app-confirmation-response
+                          [confirmation]="structured.confirmation"
+                          [annotations]="annotations"
+                          (onConfirm)="handleStructuredResponse($event)"
+                          (onCancel)="handleStructuredResponse($event)"
+                          (onCustomSubmit)="handleStructuredResponse($event)"
+                        />
+                      }
+                      @case ('question') {
+                        <app-question-response
+                          [question]="structured.question"
+                          [annotations]="annotations"
+                          [actions]="structured.actions"
+                          (onAnswer)="handleQuestionAnswer($event)"
+                          (onAction)="handleAgentAction($event)"
+                        />
+                      }
+                      @case ('project-analysis') {
+                        <app-project-analysis-viewer
+                          [data]="structured.analysis"
+                          [actions]="structured.actions"
+                          (onAction)="handleAgentAction($event)"
+                        />
+                      }
+                      @case ('config-brief') {
+                        <app-config-brief-viewer [brief]="structured.brief" [actions]="structured.actions" (onAction)="handleAgentAction($event)" />
+                      }
+                      @case ('message') {
+                        <div class="rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-sm">
+                          <app-markdown-viewer [content]="structured.markdown" class="text-sm text-slate-700" />
+                          @if (structured.actions.length > 0) {
+                            <div class="flex flex-wrap gap-3 mt-4">
+                              @for (action of structured.actions; track action.type) {
+                                <button
+                                  type="button"
+                                  class="btn btn-outline btn-sm"
+                                  (click)="handleAgentAction(action)">
+                                  {{ action.label || action.type }}
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                      @case ('fallback') {
+                        <div class="rounded-2xl border border-slate-200 bg-white/80 p-5 shadow-sm">
+                          <app-markdown-viewer [content]="structured.markdown" class="text-sm text-slate-700" />
+                        </div>
+                      }
+                    }
+                  } @else {
+                    @let configDraft = getConfigDraftPayload(part);
+                    @if (configDraft) {
+                      <app-config-draft-message [payload]="configDraft" />
+                    } @else {
+                      @let toolInfo = getToolInfo(part);
+                      @if (toolInfo) {
+                        @let toolKey = `${messageIndex}-${partIndex}`;
+                        <app-tool-call
+                          [toolName]="toolInfo.toolName"
+                          [input]="toolInfo.input"
+                          [output]="toolInfo.output"
+                          [isExpanded]="agentStore.isToolPartExpanded(toolKey)"
+                          [toolKey]="toolKey"
+                          (onToggle)="agentStore.toggleToolPart($event)"
+                        />
+                      } @else {
+                        @let text = getTextFromPart(part);
+                        @if (text && !hasStructured) {
+                          <app-markdown-viewer [content]="text" class="leading-relaxed text-slate-800 text-sm" />
+                        } @else {
+                          @if (!isSkippableUiPart(part) && !hasStructured) {
+                            <pre class="m-0 p-3 rounded-lg bg-slate-900/5 border border-slate-400/20 text-xs font-mono overflow-x-auto">{{ part | json }}</pre>
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              </div>
+            } @else {
+              <div class="w-full flex flex-col gap-4 py-5 px-5 rounded-xl border-0 shadow-xl bg-linear-to-r from-blue-600 to-sky-500 text-slate-50">
+                <app-markdown-viewer [content]="getUserMessageContent(message)" class="leading-relaxed text-slate-50 text-sm" />
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  @if (agentStore.isStreaming()) {
+    <app-streaming-indicator />
+  }
+</app-chat-interface>

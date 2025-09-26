@@ -1,0 +1,131 @@
+{
+  "name": "sheriff-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/sheriff-api/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/sheriff-api",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/sheriff-api/src/main.ts",
+        "tsConfig": "apps/sheriff-api/tsconfig.app.json",
+        "skipTypeCheck": true,
+        "assets": [
+          "apps/sheriff-api/src/assets",
+          {
+            "glob": "**/*",
+            "input": "apps/sheriff-api/public",
+            "output": "public"
+          }
+        ],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "prune-lockfile": {
+      "dependsOn": ["build"],
+      "cache": true,
+      "executor": "@nx/js:prune-lockfile",
+      "outputs": [
+        "{workspaceRoot}/dist/apps/sheriff-api/package.json",
+        "{workspaceRoot}/dist/apps/sheriff-api/yarn.lock"
+      ],
+      "options": {
+        "buildTarget": "build"
+      }
+    },
+    "copy-workspace-modules": {
+      "dependsOn": ["build"],
+      "cache": true,
+      "outputs": ["{workspaceRoot}/dist/apps/sheriff-api/workspace_modules"],
+      "executor": "@nx/js:copy-workspace-modules",
+      "options": {
+        "buildTarget": "build"
+      }
+    },
+    "prune": {
+      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+      "executor": "nx:noop"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "sheriff-api:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "sheriff-api:build:development"
+        },
+        "production": {
+          "buildTarget": "sheriff-api:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build-minimal": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "dependsOn": ["core:build"],
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/sheriff-api-minimal",
+        "format": ["cjs"],
+        "bundle": true,
+        "main": "apps/sheriff-api/src/main-minimal.ts",
+        "tsConfig": "apps/sheriff-api/tsconfig.app.json",
+        "skipTypeCheck": true,
+        "generatePackageJson": false,
+        "thirdParty": true,
+        "esbuildOptions": {
+          "sourcemap": false,
+          "outExtension": {
+            ".js": ".js"
+          },
+          "external": ["typescript"]
+        }
+      },
+      "configurations": {
+        "development": {
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            },
+            "external": ["typescript"]
+          }
+        },
+        "production": {}
+      }
+    }
+  }
+}

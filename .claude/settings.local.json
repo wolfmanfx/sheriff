@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx ng lint:*)",
+      "Bash(cp:*)",
+      "Bash(./run-integration-tests.sh:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run:*)",
+      "Bash(yalc publish:*)",
+      "Bash(npx nx reset:*)",
+      "Bash(npx nx show:*)",
+      "Bash(npx nx serve:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,10 @@
+<div class="flex flex-col w-full h-screen overflow-hidden">
+  <app-header></app-header>
+
+  <div class="flex-1 min-h-0 w-full overflow-hidden">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<!-- Named outlet for popup/modal routes -->
+<router-outlet name="popup"></router-outlet>

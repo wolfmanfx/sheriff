@@ -42,3 +42,19 @@ Thumbs.db
 .yalc
 yalc.lock
 .test-projects
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+.angular
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+apps/sheriff-api/.env
+apps/sheriff-api/.env.local

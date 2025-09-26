@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1300 350" style="background-color: #ffffff;">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333333"/>
+    </marker>
+    <linearGradient id="stateGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8f4f8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d0e8f0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <style>
+    .stateLabel { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      font-size: 16px; 
+      fill: #2c3e50; 
+      font-weight: 600;
+    }
+    .edgeLabel { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      font-size: 13px; 
+      fill: #555; 
+      font-weight: 500;
+    }
+    .stateNode { 
+      fill: url(#stateGradient); 
+      stroke: #4a90e2; 
+      stroke-width: 2.5px; 
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+    .startEndNode { 
+      fill: #2c3e50; 
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+    }
+    .edgePath { 
+      fill: none; 
+      stroke: #555; 
+      stroke-width: 2px; 
+    }
+  </style>
+  
+  <!-- Start node -->
+  <circle cx="40" cy="175" r="10" class="startEndNode"/>
+  
+  <!-- INIT state -->
+  <rect x="80" y="135" width="110" height="80" rx="8" class="stateNode"/>
+  <text x="135" y="180" text-anchor="middle" class="stateLabel">INIT</text>
+  
+  <!-- STRUCTURE state -->
+  <rect x="320" y="135" width="130" height="80" rx="8" class="stateNode"/>
+  <text x="385" y="180" text-anchor="middle" class="stateLabel">STRUCTURE</text>
+  
+  <!-- DEPENDENCY_RULES state -->
+  <rect x="620" y="135" width="200" height="80" rx="8" class="stateNode"/>
+  <text x="720" y="165" text-anchor="middle" class="stateLabel">DEPENDENCY</text>
+  <text x="720" y="185" text-anchor="middle" class="stateLabel">RULES</text>
+  
+  <!-- DONE state -->
+  <rect x="980" y="135" width="110" height="80" rx="8" class="stateNode"/>
+  <text x="1035" y="180" text-anchor="middle" class="stateLabel">DONE</text>
+  
+  <!-- End node -->
+  <circle cx="1140" cy="175" r="10" class="startEndNode"/>
+  
+  <!-- Edges -->
+  <!-- Start to INIT -->
+  <path d="M 50 175 L 80 175" class="edgePath" marker-end="url(#arrowhead)"/>
+  
+  <!-- INIT to STRUCTURE -->
+  <path d="M 190 175 L 320 175" class="edgePath" marker-end="url(#arrowhead)"/>
+  <rect x="230" y="115" width="60" height="20" fill="white" rx="3" opacity="0.9"/>
+  <text x="260" y="130" text-anchor="middle" class="edgeLabel">Extract path</text>
+  
+  <!-- STRUCTURE to DEPENDENCY_RULES -->
+  <path d="M 450 175 L 620 175" class="edgePath" marker-end="url(#arrowhead)"/>
+  <rect x="500" y="115" width="70" height="35" fill="white" rx="3" opacity="0.9"/>
+  <text x="535" y="130" text-anchor="middle" class="edgeLabel">Analyze &amp; extract</text>
+  <text x="535" y="145" text-anchor="middle" class="edgeLabel">domains/types</text>
+  
+  <!-- DEPENDENCY_RULES self-loop -->
+  <path d="M 660 135 Q 660 90 720 90 Q 780 90 780 135" class="edgePath" marker-end="url(#arrowhead)"/>
+  <rect x="700" y="70" width="60" height="20" fill="white" rx="3" opacity="0.9"/>
+  <text x="730" y="85" text-anchor="middle" class="edgeLabel">Refine rules</text>
+  
+  <!-- DEPENDENCY_RULES to DONE -->
+  <path d="M 820 175 L 980 175" class="edgePath" marker-end="url(#arrowhead)"/>
+  <rect x="870" y="115" width="60" height="20" fill="white" rx="3" opacity="0.9"/>
+  <text x="900" y="130" text-anchor="middle" class="edgeLabel">Generate config</text>
+  
+  <!-- DONE to End -->
+  <path d="M 1090 175 L 1130 175" class="edgePath" marker-end="url(#arrowhead)"/>
+</svg>

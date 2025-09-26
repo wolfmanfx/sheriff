@@ -1,0 +1,27 @@
+digraph StateMachine {
+    rankdir=LR;
+    node [shape=box, style=rounded, fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial", fontsize=10];
+    
+    Start [shape=point, style=invis];
+    Start -> INIT [label="New Session"];
+    
+    INIT [label="INIT\n\n• Welcome user\n• Ask for project path\n  and entry file\n• Session data initialized"];
+    INIT -> STRUCTURE [label="Welcome message sent"];
+    INIT -> INIT [label="Restart command", style=dashed, color=red];
+    
+    STRUCTURE [label="STRUCTURE\n\n• Extract cwd and entry\n  from user input\n• Analyze project structure\n• Extract domains, types,\n  hasShared, domainBasePath\n• Uses getAllFilesAsTreeText()"];
+    STRUCTURE -> STRUCTURE [label="Extract path/entry\n(waiting for user input)", style=dashed];
+    STRUCTURE -> DEPENDENCY_RULES [label="Path extracted\nProject analyzed\nDomains/types extracted"];
+    STRUCTURE -> INIT [label="Restart command", style=dashed, color=red];
+    
+    DEPENDENCY_RULES [label="DEPENDENCY_RULES\n\n• Configure dependency rules:\n  - domainIsolation (boolean)\n  - typeHierarchy (object)\n  - sharedAccess (boolean)\n  - rootAccess (string[])\n• User can update rules iteratively"];
+    DEPENDENCY_RULES -> DEPENDENCY_RULES [label="Update rules\n(domainIsolation, typeHierarchy,\nsharedAccess, rootAccess)", style=dashed];
+    DEPENDENCY_RULES -> DONE [label="User says\n\"create/generate/done/\nfinish/complete\""];
+    DEPENDENCY_RULES -> INIT [label="Restart command", style=dashed, color=red];
+    
+    DONE [label="DONE\n\n• Generate Sheriff config\n• Configuration complete\n• No further processing allowed"];
+    DONE -> DONE [label="Configuration generated\n(no further processing)", style=dashed];
+    DONE -> INIT [label="Restart command", style=dashed, color=red];
+}
+
